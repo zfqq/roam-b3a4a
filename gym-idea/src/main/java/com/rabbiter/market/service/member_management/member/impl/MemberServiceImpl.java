@@ -1,5 +1,6 @@
 package com.rabbiter.market.service.member_management.member.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.rabbiter.market.common.exception.BusinessException;
 import com.rabbiter.market.domain.member_management.member.Member;
 import com.rabbiter.market.mapper.member_management.member.MemberMapper;
@@ -11,6 +12,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import sun.misc.BASE64Decoder;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> implements IMemberService {
@@ -45,6 +53,10 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         member.setPassword(Member.DEFAULT_PWD);
         member.setState(Member.STATE_NORMAL);
         member.setIntegral(0L);
+        JSONObject jsonObject = uploadImage(member.getImage());
+        if((Boolean) jsonObject.get("success")){
+            member.setImage(jsonObject.get("msg").toString());
+        }
         super.save(member);
     }
 
@@ -76,5 +88,69 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
             throw new BusinessException("该会员不存在");
         }
         return one;
+    }
+
+
+
+
+    public JSONObject uploadImage(String base64Data){
+        JSONObject jsonObject = new JSONObject();
+        String dataPrix = ""; //base64格式前头
+        String data = "";//实体部分数据
+        if(base64Data==null|| base64Data.isEmpty()){
+            jsonObject.put("success",false);
+            jsonObject.put("msg","上传失败，上传图片数据为空");
+            return jsonObject;
+        }else {
+            String [] d = base64Data.split("base64,");//将字符串分成数组
+            if(d.length == 2){
+                dataPrix = d[0];
+                data = d[1];
+            }else {
+                jsonObject.put("success",false);
+                jsonObject.put("msg","上传失败，数据不合法");
+                return jsonObject;
+            }
+        }
+        String suffix = "";//图片后缀，用以识别哪种格式数据
+        if("data:image/jpeg;".equalsIgnoreCase(dataPrix)){
+            suffix = ".jpg";
+        }else if("data:image/x-icon;".equalsIgnoreCase(dataPrix)){
+            suffix = ".ico";
+        }else if("data:image/gif;".equalsIgnoreCase(dataPrix)){
+            suffix = ".gif";
+        }else if("data:image/png;".equalsIgnoreCase(dataPrix)){
+            suffix = ".png";
+        }else {
+            jsonObject.put("success",false);
+            jsonObject.put("msg","上传图片格式不合法");
+            return jsonObject;
+        }
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String tempFileName=uuid+suffix;
+        String imgFilePath = "D:\\picTmp\\"+tempFileName;//新生成的图片
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            //Base64解码
+            byte[] b = decoder.decodeBuffer(data);
+            for(int i=0;i<b.length;++i) {
+                if(b[i]<0) {
+                    //调整异常数据
+                    b[i]+=256;
+                }
+            }
+            OutputStream out = Files.newOutputStream(Paths.get(imgFilePath));
+            out.write(b);
+            out.flush();
+            out.close();
+            jsonObject.put("success",true);
+            jsonObject.put("msg",imgFilePath);
+            return jsonObject;
+        } catch (IOException e) {
+            e.printStackTrace();
+            jsonObject.put("success",false);
+            jsonObject.put("msg","上传图片失败");
+            return jsonObject;
+        }
     }
 }

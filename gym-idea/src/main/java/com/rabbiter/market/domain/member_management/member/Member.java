@@ -37,6 +37,7 @@ public class Member implements Serializable {
     private String amount;
     private String type;
     private Long instructor;
+    private String image;
 
 
 }
