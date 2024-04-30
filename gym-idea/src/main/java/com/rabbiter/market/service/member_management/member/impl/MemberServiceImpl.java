@@ -12,18 +12,22 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.tomcat.util.codec.binary.Base64;
 import com.rabbiter.market.vo.member.MemberVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import sun.misc.BASE64Decoder;
 
+import java.io.FileInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +43,14 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         wrapper.eq(StringUtils.hasText(qo.getState()), "state", qo.getState());
         wrapper.eq(StringUtils.hasText(qo.getCardnumber()), "cardnumber", qo.getCardnumber());
         super.page(page, wrapper);
+        List<Member> records = page.getRecords();
+        for (Member record : records) {
+            if(!StringUtils.isEmpty(record.getImage())){
+                record.setImage("data:image/png;base64,"+getImgBase64Str(record.getImage()));
+
+            }
+
+        }
         return page;
     }
 
@@ -71,7 +83,8 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Override
     public Member queryMemberById(Long id) {
         Member byId = super.getById(id);
-        return super.getById(id);
+        byId.setImage("data:image/png;base64,"+getImgBase64Str(byId.getImage()));
+        return byId;
     }
 
     @Override
@@ -118,6 +131,23 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         }
     }
 
+
+    //参数imgFile：图片完整路径
+    public  String getImgBase64Str(String imgFile) {
+        // 将图片文件转化为字节数组字符串，并对其进行Base64编码处理
+        InputStream in = null;
+        byte[] data = null;
+        // 读取图片字节数组
+        try {
+            in = new FileInputStream(imgFile);
+            data = new byte[in.available()];
+            in.read(data);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Base64.encodeBase64String(data);
+    }
 
     public JSONObject uploadImage(String base64Data) {
         JSONObject jsonObject = new JSONObject();
