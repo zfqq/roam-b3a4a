@@ -5,6 +5,9 @@ import com.rabbiter.market.qo.member_management.member.QueryMember;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 public interface IMemberService extends IService<Member> {
     Page<Member> queryPageByQo(QueryMember qo);
 
@@ -17,4 +20,7 @@ public interface IMemberService extends IService<Member> {
     void updateMember(Member member);
 
     Member queryMemberByPhone(String phone);
+
+    void reportExportExcel(QueryMember qo, HttpServletRequest request, HttpServletResponse response);
+
 }

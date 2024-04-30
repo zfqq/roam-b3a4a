@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -69,5 +71,10 @@ public class MemberController {
     public JsonResult selected_goodsAll(){
         List<Map<String,Object>> list=goodsService.selected_goodsAll();
         return JsonResult.success(list);
+    }
+    @PostMapping("/reportExportExcel")
+    public void reportExportExcel(QueryMember qo, HttpServletRequest request, HttpServletResponse response) {
+        memberService.reportExportExcel(qo, request, response);
+
     }
 }
