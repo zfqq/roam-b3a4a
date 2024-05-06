@@ -43,14 +43,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         wrapper.eq(StringUtils.hasText(qo.getState()), "state", qo.getState());
         wrapper.eq(StringUtils.hasText(qo.getCardnumber()), "cardnumber", qo.getCardnumber());
         super.page(page, wrapper);
-        List<Member> records = page.getRecords();
-        for (Member record : records) {
-            if(!StringUtils.isEmpty(record.getImage())){
-                record.setImage("data:image/png;base64,"+getImgBase64Str(record.getImage()));
 
-            }
-
-        }
         return page;
     }
 
@@ -83,7 +76,6 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
     @Override
     public Member queryMemberById(Long id) {
         Member byId = super.getById(id);
-        byId.setImage("data:image/png;base64,"+getImgBase64Str(byId.getImage()));
         return byId;
     }
 
@@ -122,7 +114,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberMapper, Member> impleme
         super.page(page, wrapper);
         List<Member> memberVos = new ArrayList<>(page.getRecords());
         try {
-             response.setContentType("application/vnd.ms-excel");
+            response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("UTF-8");
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("会员信息", "UTF-8"));
             EasyExcel.write(response.getOutputStream(), MemberVo.class).sheet().doWrite(memberVos);
