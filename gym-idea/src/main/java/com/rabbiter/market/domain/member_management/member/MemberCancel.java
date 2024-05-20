@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("t_memberCancel")
+@TableName("t_membercancel")
 public class MemberCancel {
     // 会员卡
     private Long cardnumber;
