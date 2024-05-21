@@ -75,8 +75,8 @@ public class TConnectMember {
     /**
      * 备注
      */
-    @TableField(value = "remarks")
     @ExcelProperty(index = 12, value = "备注")
+    @TableField(exist = false)
     private Byte[] remarks;
     /**
      * 来源
@@ -84,4 +84,42 @@ public class TConnectMember {
     @TableField(value = "source")
     @ExcelProperty(index = 13, value = "来源")
     private String source;
+    @TableField(value = "contractcoach")
+    private String contractcoach;
+    @TableField(value = "coursetype")
+    private String coursetype;
+    @TableField(value = "coursename")
+    private String coursename;
+    @TableField(value = "remainingtimes")
+    private String remainingtimes;
+    @TableField(value = "purchasetime")
+    private String purchasetime;
+    @TableField(value = "contractcoaching")
+    private String contractcoaching;
+    @TableField(value = "unitpriceamount")
+    private String unitpriceamount;
+    @TableField(value = "usagetype")
+    private String usagetype;
+    @TableField(value = "salesperson")
+    private String salesperson;
+    @TableField(value = "refunddate")
+    private String refunddate;
+    @TableField(value = "paymentsubtotal")
+    private String paymentsubtotal;
+    @TableField(value = "refundrecipient")
+    private String refundrecipient;
+    @TableField(value = "status")
+    private String status;
+    @TableField(value = "operators")
+    private String operators;
+    @TableField(value = "operationtime")
+    private String operationtime;
+    @TableField(value = "stores")
+    private String stores;
+    @TableField(value = "extensiondays")
+    private String extensiondays;
+    @TableField(value = "purchasefrequency")
+    private String purchasefrequency;
+    @TableField(exist = false)
+    private String overduetime;
 }
